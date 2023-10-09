@@ -99,20 +99,40 @@ extension SwiftPackage {
         
         if let resolvedV1 = try? JSONDecoder().decode(ResolvedV1.self, from: data) {
             return resolvedV1.object.pins.map {
-                SwiftPackage(
+                let versionString = $0.state.version
+                let branchString = $0.state.branch
+                var version: Version? = nil
+                if versionString == nil,
+                   let branchString = branchString {
+                    version = Version(branchString)
+                } else {
+                    version = Version($0.state.version ?? "")
+                }
+
+                return SwiftPackage(
                     package: $0.package,
                     repositoryURL: $0.repositoryURL,
                     revision: $0.state.revision,
-                    version: Version($0.state.version ?? "")
+                    version: version
                 )
             }
         } else if let resolvedV2 = try? JSONDecoder().decode(ResolvedV2.self, from: data) {
             return resolvedV2.pins.map {
-                SwiftPackage(
+                let versionString = $0.state.version
+                let branchString = $0.state.branch
+                var version: Version? = nil
+                if versionString == nil,
+                   let branchString = branchString {
+                    version = Version(branchString)
+                } else {
+                    version = Version($0.state.version ?? "")
+                }
+
+                return SwiftPackage(
                     package: $0.identity,
                     repositoryURL: $0.location,
                     revision: $0.state.revision,
-                    version: Version($0.state.version ?? "")
+                    version: version
                 )
             }
         } else {
